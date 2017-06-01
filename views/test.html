@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script type="text/javascript" src="http://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script>
+</head>
+<style>
+	input{
+		width: 300px;
+		height: 60px;
+		font-size: 40px;
+	}
+</style>
+<body>
+<input type="button" value="拍照" id="btn1"/>
+<input type="button" value="二维码" id="btn4"/>
+<script type="text/javascript">
+    $.ajax({
+        url: 'http://isy.ngrok.cc/sign/0',
+        type: 'get',
+        dataType: 'jsonp',
+        data: {
+            url: location.href.split('#')[0]
+        },
+        success: function(data) {
+            wx.config({
+                debug: true,
+                appId: data.appid,
+                timestamp: data.timestamp,
+                nonceStr: data.nonceStr,
+                signature: data.signature,
+                jsApiList: [
+                    // 所有要调用的 API 都要加到这个列表中
+                    'chooseImage',
+                    'scanQRCode',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage'
+                ]
+            });
+        },
+        error:function(e){
+            alert(e)
+        }
+    });
+
+    wx.ready(function(){
+        wx.onMenuShareTimeline({
+            title: '你好', // 分享标题
+            link: 'https://mp.weixin.qq.com', // 分享链接
+            imgUrl: 'https://res.wx.qq.com/mpres/htmledition/images//bg/bg_login_banner_v5218877.jpg', // 分享图标
+            success: function () {
+                // 用户确认分享后执行的回调函数
+                alert("onMenuShareTimeline成功")
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+                alert("onMenuShareTimeline取消")
+            }
+        });
+        wx.onMenuShareAppMessage({
+            debug: true,
+            title: '你好', // 分享标题
+            desc: '这是我的分享', // 分享描述
+            link: 'https://mp.weixin.qq.com', // 分享链接
+            imgUrl: 'https://res.wx.qq.com/mpres/htmledition/images//bg/bg_login_banner_v5218877.jpg', // 分享图标
+            type: '', // 分享类型,music、video或link，不填默认为link
+            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+            success: function () {
+                alert("onMenuShareAppMessage成功");
+                // 用户确认分享后执行的回调函数
+            },
+            cancel: function () {
+                alert("onMenuShareAppMessage取消");
+                // 用户取消分享后执行的回调函数
+            }
+        });
+
+        var oBtn = document.getElementById('btn1');
+        oBtn.onclick = function() {
+            wx.chooseImage({
+                count: 1, // 默认9
+                sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                success: function(res) {
+                    var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                    alert(localIds);
+                }
+            });
+        };
+
+        // 扫码二维码
+        var scanQR = document.getElementById('btn4');
+        scanQR.onclick = function() {
+            wx.scanQRCode({
+                needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                success: function(res) {
+                    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                }
+            });
+        };
+
+        wx.error(function(res){
+            alert("errorMSG:"+res);
+        });
+	});
+</script>
+</body>
+</html>
