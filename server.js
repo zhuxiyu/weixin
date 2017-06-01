@@ -1,30 +1,10 @@
 var wechat = require("wechat");
 var express = require('express');
 var fs = require('fs');
-var log4js = require('log4js');
 var https = require('https');
 var accesstoken = null;
 var ticket = null;
 var port = 3000;
-
-log4js.configure({
-  appenders: [
-    { type: 'console' }, //控制台输出
-    {
-      type: 'dateFile', //文件输出
-      filename: './log/',
-      maxLogSize: 20480,
-      backups:3,
-      category: 'log_date',
-      alwaysIncludePattern: true,
-      pattern: "yyyy_MM_dd.log"
-    }
-  ],
-  replaceConsole: true
-});
-var logger = log4js.getLogger('log_date');
-logger.setLevel(log4js.levels.INFO);
-
 var app = express();
 /*引入模板引擎*/
 var handlebars = require('express3-handlebars')
